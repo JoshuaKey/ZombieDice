@@ -1,0 +1,9 @@
+#title{
+	-fx-font: 32pt "Arial";
+}
+#playerTurn{
+	-fx-background-color: #aaaaaa;
+}
+ChoiceBox{
+	-fx-font: 8pt "Arial";
+}
