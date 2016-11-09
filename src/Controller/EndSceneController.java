@@ -12,7 +12,7 @@ public class EndSceneController {
 	}
 	
 	public void playAgain(){
-		StartScene beginning = new StartScene();
+		StartScene beginning = new StartScene(scene.getWidth(), scene.getHeight());
 		beginning.scene(scene.getStage());
 	}
 

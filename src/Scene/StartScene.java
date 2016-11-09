@@ -11,29 +11,37 @@ import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.geometry.Insets;
+import javafx.geometry.Orientation;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.Label;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.FlowPane;
+import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
+import javafx.scene.text.Text;
 import javafx.stage.Stage;
 
 public class StartScene extends DisplayScene{
+	private final int MAX_PLAYERS = 20;
 	
-	private final int MAX_PLAYERS = 8;
 	private StartSceneController control;
-	private ArrayList<PlayerField> playersList;
-	private VBox playerBox;
+	private FlowPane playerBox;
 	private ChoiceBox<String> diffBox;
+	private VBox center;
+	
+	private ArrayList<PlayerField> playersList;
 	private SimpleIntegerProperty playerAmo;
 
-	public StartScene(){
+	public StartScene(int width, int height){
+		WIDTH = width;
+		HEIGHT = height;
 		control = new StartSceneController(this);
 		playersList = new ArrayList<PlayerField>();
 		playerAmo = new SimpleIntegerProperty();
@@ -42,29 +50,48 @@ public class StartScene extends DisplayScene{
 	@Override
 	public void scene(Stage s) {
 		this.s = s;
-		Pane root = new Pane();
-		//root.setMaxSize(Double.MAX_VALUE, Double.MAX_VALUE);
+		BorderPane root = new BorderPane();
 		
-		BorderPane display = new BorderPane();
-		root.getChildren().add(display);
+		GridPane top = new GridPane();
+		//top.setGridLinesVisible(true);
+//		top.setHgap(10);
+//		top.setVgap(10);
+		top.setPadding(new Insets(10));
+		top.setAlignment(Pos.CENTER);
 	
 		// title
 		Label title = new Label("Zombie Dice");
 		title.setId("title");
 		title.setPadding(new Insets(10));
-		display.setTop(new StackPane(title));
+		top.add(title, 0, 0, 1, 2);
+		
+		// help button
+		Button infoBtn = new Button("?");
+		infoBtn.setId("infoButton");
+		infoBtn.setAlignment(Pos.TOP_RIGHT);
+		infoBtn.setOnAction(e -> control.createHelp());
+		top.add(infoBtn, 1, 0);
+		
+		root.setTop(top);
 		
 		// center with text and players
-		playerBox = new VBox();
-		playerBox.setSpacing(10);
+		center = new VBox();
+		center.setSpacing(10);
+		center.setPadding(new Insets(10));
+		center.setAlignment(Pos.TOP_CENTER);
+		// how to center the text on new lines...
+		// game sceen needs to have a flow pane...
+		center.getChildren().add(new Text("Indicate who is playing"));
+		
+		playerBox = new FlowPane(Orientation.VERTICAL, 10, 10);
 		playerBox.setPadding(new Insets(10));
 		playerBox.setAlignment(Pos.TOP_CENTER);
-		playerBox.getChildren().add(new Label("Indicate who is playing"));
 		
 		PlayerField player1 = new PlayerField(1);
 		PlayerField player2 = new PlayerField(2);
 		playersList.add(player1);playersList.add(player2);
-		playerBox.getChildren().addAll(playersList);
+		playerBox.getChildren().addAll(player1, player2);
+		center.getChildren().add(playerBox);
 		
 		Button addPlayer = new Button("Add Player");
 		addPlayer.setOnAction(e -> control.addPlayer());
@@ -84,21 +111,21 @@ public class StartScene extends DisplayScene{
 			public void changed(ObservableValue observale, Object oldValue, Object newValue){
 				Integer value = (Integer) newValue;
 				if(value >= MAX_PLAYERS){
-					playerBox.getChildren().remove(addPlayer);
-				} else if(!playerBox.getChildren().contains(addPlayer)){
-					playerBox.getChildren().add(playerBox.getChildren().size()-1, addPlayer);
+					center.getChildren().remove(addPlayer);
+				} else if(!center.getChildren().contains(addPlayer)){
+					center.getChildren().add(center.getChildren().size()-1, addPlayer);
 				}
 				if(value <= 2){
-					playerBox.getChildren().remove(removePlayer);
-				} else if(!playerBox.getChildren().contains(removePlayer)){
-					playerBox.getChildren().add(removePlayer);
+					center.getChildren().remove(removePlayer);
+				} else if(!center.getChildren().contains(removePlayer)){
+					center.getChildren().add(removePlayer);
 				}
 			}
 		});
 		
-		playerBox.getChildren().addAll(addPlayer);
+		center.getChildren().addAll(addPlayer);
 		
-		display.setCenter(playerBox);
+		root.setCenter(center);
 		
 		// play button and center
 		Button playBtn = new Button("Play");
@@ -123,9 +150,9 @@ public class StartScene extends DisplayScene{
 		bottom.setSpacing(10);
 		bottom.getChildren().addAll(playBtn, rightSide);
 		
-		display.setBottom(bottom);
+		root.setBottom(bottom);
 		
-		Scene scene = new Scene(root);
+		Scene scene = new Scene(root, WIDTH, HEIGHT);
 		scene.getStylesheets().add("StyleSheets/StyleSheet.css");
 		s.setScene(scene);
 		s.centerOnScreen();
@@ -135,7 +162,7 @@ public class StartScene extends DisplayScene{
 		return playersList;
 	}
 	
-	public VBox getPlayerDisplay(){
+	public FlowPane getPlayerBox(){
 		return playerBox;
 	}
 	

@@ -4,8 +4,10 @@ import java.util.ArrayList;
 
 import Players.Player;
 import Scene.GameScene;
+import Scene.HelpScene;
 import Scene.StartScene;
 import UserNodes.PlayerField;
+import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.VBox;
 
 public class StartSceneController {
@@ -36,6 +38,11 @@ public class StartSceneController {
 		game.scene(scene.getStage());
 	}
 	
+	public void createHelp(){
+		HelpScene help = new HelpScene(scene.getWidth(), scene.getHeight());
+		help.scene(scene.getStage());
+	}
+	
 	public void addPlayer(){
 		ArrayList<PlayerField> playersList = scene.getPlayerList();
 		
@@ -43,8 +50,8 @@ public class StartSceneController {
 		playersList.add(temp);
 		scene.getPlayerAmo().set(playersList.size());
 		
-		VBox playerDisplay = scene.getPlayerDisplay();
-		playerDisplay.getChildren().add(playersList.size(), temp);
+		FlowPane playerDisplay = scene.getPlayerBox();
+		playerDisplay.getChildren().add(temp);
 		
 		scene.getStage().sizeToScene();
 		scene.getStage().centerOnScreen();
@@ -55,8 +62,8 @@ public class StartSceneController {
 		playersList.remove(playersList.size()-1);
 		scene.getPlayerAmo().set(playersList.size());
 		
-		VBox playerDisplay = scene.getPlayerDisplay();
-		playerDisplay.getChildren().remove(playersList.size()+1);
+		FlowPane playerDisplay = scene.getPlayerBox();
+		playerDisplay.getChildren().remove(playersList.size());
 		
 		scene.getStage().sizeToScene();
 		scene.getStage().centerOnScreen();
